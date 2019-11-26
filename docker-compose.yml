@@ -1,0 +1,35 @@
+# Версия docker-compose
+version: '2'
+# Список наших сервисов (контейнеров)
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./hosts:/etc/nginx/conf.d
+            - ./www:/var/www
+            - ./logs:/var/log/nginx
+        links:
+            - php
+    php:
+        build: ./images/php
+        links:
+            - mysql
+        volumes:
+            - ./www:/var/www
+    mysql:
+        image: mysql:8.0.18
+        ports:
+            - "3316:3316"
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+    redis:
+       build:
+          context: ./redis
+       container_name: "dev_redis"
+       restart: "always"
+
